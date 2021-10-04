@@ -12,7 +12,7 @@ const questions = [
     "background": "bg-01"
   },
   {
-    "question": "When planning a meeting, I make the necessary arrangements well in advance.",
+    "question": "When planning a meeting, I make the necessary arrangements in advance.",
     "answer1": "Yes",
     "answer1Total": "5",
     "answer2": "Maybe",
@@ -33,7 +33,7 @@ const questions = [
       "background": "bg-01"
   },
   {
-    "question": "I find that jobs often don't get done for days, even when they require little else except sitting down and doing them.",
+    "question": "I often postpone my job even when it only requires a little effort.",
     "answer1": "Yes",
     "answer1Total": "5",
     "answer2": "Maybe",
@@ -43,7 +43,7 @@ const questions = [
     "background": "bg-02"
   },
   {
-    "question": "Once I have the information I need, I usually make decisions as soon as possible.",
+    "question": "Once I have the information needed, I usually make decisions as soon as possible.",
     "answer1": "Yes",
     "answer1Total": "5",
     "answer2": "Maybe",
@@ -54,7 +54,7 @@ const questions = [
   },
   {
     "question":
-      "When I have something difficult to do, I tell myself that it's better to wait to do it until I'm feeling more inspired.",
+      "When I have something difficult to do, I tell myself that it is better for me to do it until I feel inspired.",
       "answer1": "Yes",
       "answer1Total": "5",
       "answer2": "Maybe",
@@ -84,7 +84,7 @@ const questions = [
     "background": "bg-03"
   },
   {
-    "question": "I usually start a task I'm given shortly after I'm given it.",
+    "question": "I usually start a task as soon as it is assigned to me.",
     "answer1": "Yes",
     "answer1Total": "5",
     "answer2": "Maybe",
@@ -94,7 +94,7 @@ const questions = [
     "background": "bg-03"
   },
   {
-    "question": "When deadlines are approaching, I often waste time by doing other things.",
+    "question": "When deadlines are approaching, I often waste my time by doing other things.",
     "answer1": "Yes",
     "answer1Total": "5",
     "answer2": "Maybe",
@@ -104,7 +104,7 @@ const questions = [
     "background": "bg-03"
   },
   {
-    "question": "I often have a task finished sooner than necessary.",
+    "question": "I often have a task finished sooner than the deadline.",
     "answer1": "Yes",
     "answer1Total": "5",
     "answer2": "Maybe",
@@ -114,7 +114,7 @@ const questions = [
     "background": "bg-03"
   },
   {
-    "question": "When preparing for a meeting, I am seldom caught having to do something at the last minute.",
+    "question": "When preparing for a meeting, I seldom rush to do something at the last minute.",
     "answer1": "Yes",
     "answer1Total": "5",
     "answer2": "Maybe",
@@ -124,7 +124,7 @@ const questions = [
     "background": "bg-04"
   },
   {
-    "question": "I often delay starting tasks that I have to do.",
+    "question": "I often delay starting a task that I have to do.",
     "answer1": "Yes",
     "answer1Total": "5",
     "answer2": "Maybe",
@@ -134,7 +134,7 @@ const questions = [
     "background": "bg-04"
   },
   {
-    "question": "When faced with a huge task, I figure out what the first step is so that I can get going.",
+    "question": "When faced with a huge task, I figure out the first step to get me going.",
     "answer1": "Yes",
     "answer1Total": "5",
     "answer2": "Maybe",
@@ -257,39 +257,25 @@ function loadNextQuestion () {
     }
     //If the quiz is finished then we hide the questions container and show the results 
     if(currentQuestion == totalQuestions && totalScore >= 60) {
-      // footer.classList.remove("activestatic");
-      //   container.style.display = 'none';
-        window.location.href = "../h1/index.html";
-        // resulth1.classList.remove("hidden");
-        // resulth1.classList.add("active");
+
+        window.location.href = "/h1/index.html";
+
     }
     
     else if (currentQuestion == totalQuestions && totalScore >= 45) {
-      header.classList.remove("activestatic");
-      footer.classList.remove("activestatic");
-      container.style.display = 'none';
-      resulth2.classList.add("active");
+      window.location.href = "/h2/index.html";
     }
 
-    else if (currentQuestion == totalQuestions && totalScore >= 30) {
-      header.classList.remove("activestatic");
-      footer.classList.remove("activestatic");
-      container.style.display = 'none';
-      resulth2.classList.add("active");
+    else if (currentQuestion == totalQuestions && totalScore >= 31) {
+      window.location.href = "/h3/index.html";
     }
 
-    else if (currentQuestion == totalQuestions && totalScore >= 15) {
-      header.classList.remove("activestatic");
-      footer.classList.remove("activestatic");
-      container.style.display = 'none';
-      resulth2.classList.add("active");
+    else if (currentQuestion == totalQuestions && totalScore >= 16) {
+      window.location.href = "/h4/index.html";
     }
 
     else if (currentQuestion == totalQuestions && totalScore >= 5) {
-      header.classList.remove("activestatic");
-      footer.classList.remove("activestatic");
-      container.style.display = 'none';
-      resulth2.classList.add("active");
+      window.location.href = "/h5/index.html";
     }
     
     // width = $(".progress__inner").css("width");

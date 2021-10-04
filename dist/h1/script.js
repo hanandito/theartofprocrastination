@@ -64,5 +64,5 @@ var animation = bodymovin.loadAnimation({
   renderer: "svg",
   loop: true,
   autoplay: true,
-  path: "steadyrandy_1.json"
+  path: "steadyrandy_comp.json"
 })
