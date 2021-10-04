@@ -1,0 +1,1 @@
+  10/09/21 16.46.58 GMT+8: Starting composition “tempConverterComp”.  Output To: /private/var/folders/td/8l5brx9x3j39nn6sk57w66d40000gn/T/TemporaryItems/Bodymovin/ikr0ea1bfu/raw/images/img_4.png    10/09/21 16.46.58 GMT+8: Finished composition “tempConverterComp”.  Total Time Elapsed: 0 SecondsLog closed on 10/09/21 at 16.46.58 GMT+8
