@@ -125,6 +125,7 @@ button {
   justify-content: flex-start;
   padding: 25px;
   transition: all .5s ease-in-out !important;
+  pointer-events: none;
 }
 
 .atas:target{
@@ -195,13 +196,12 @@ width: 50%;
 .start_btn {
   /* background: white; */
   align-items: center;
-  position: absolute;
+  position: relative;
   display: flex;
   flex-direction: column;
   width: 80%;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(1);
+  margin: 0 auto;
+  padding-bottom: 3rem;
   border-radius: 10px;
 }
 
@@ -218,7 +218,7 @@ width: 50%;
   font-weight: 10;
   font-size: 4em;
   text-align: center;
-  line-height: 4rem;
+  line-height: 1.1;
   margin-bottom: 1.5rem;
   font-family: "Editorial_UltraLight" ;
 }
@@ -232,7 +232,8 @@ width: 50%;
 }
 
 .start_btn .sub_body{
-  width: 40rem;
+  width: 100%;
+  max-width: 40rem;
   line-height: 1.5rem;
 }
 
@@ -255,17 +256,21 @@ width: 50%;
 
 .start_btn .personadepan {
   /* background-color: #3C8196; */
-  margin-top: 10rem;
+  margin-top: 0;
   display: block;
   margin-left: auto;
   margin-right: auto;
-  margin-bottom: 5rem;
-width: 500px;
+  margin-bottom: 3rem;
+  width: 500px;
+  max-width: 100%;
+  max-height: 50vh;
+  object-fit: contain;
 }
 
 .start_btn .containerdepan {
   /* background-color: #6CC198; */
-  margin-top: 100px;
+  margin-top: 0;
+  width: 100%;
 }
 
 .container_background{
@@ -295,6 +300,11 @@ width: 500px;
   text-shadow: 0 1px #00000010;
   width: 650px;
   flex-direction: column;
+  pointer-events: none;
+  /* keep the card between the fixed header and footer on short screens */
+  max-height: calc(100vh - 220px);
+  max-height: calc(100svh - 220px);
+  overflow-y: auto;
 }
 /* 
 .quiz-container {
@@ -428,6 +438,7 @@ text-align:left;
   align-items: center;
   justify-content:space-between;
   box-shadow: 0px -2px 12px rgba(0,0,0,0.1);
+  pointer-events: none;
 }
 
 .controls{
@@ -511,6 +522,7 @@ button:focus {
 .activestatic{
   opacity: 1;
   z-index: 5;
+  pointer-events: auto;
   transition-delay: 250ms !important;
   transition: all 1s;
 }
