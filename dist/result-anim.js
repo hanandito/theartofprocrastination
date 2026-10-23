@@ -1,0 +1,203 @@
+// Shared gamified animations for result pages h1-h5. Loaded after each page's script.js.
+(function () {
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var root = document.documentElement;
+  root.classList.add("anim");
+
+  // which persona is this page? h1..h5 matches the 1-5 prefix on the persona images
+  var level = parseInt((location.pathname.match(/\/h([1-5])\//) || [])[1], 10) || 1;
+  var TOTAL = 5;
+
+  // ---------- collection (persists across retakes) ----------
+  var collected = [];
+  try { collected = JSON.parse(localStorage.getItem("taop-collected")) || []; } catch (e) {}
+  var isNew = collected.indexOf(level) === -1;
+  if (isNew) collected.push(level);
+  try { localStorage.setItem("taop-collected", JSON.stringify(collected)); } catch (e) {}
+
+  // ---------- hero extras: unlock badge + level meter ----------
+  var hero = document.querySelector(".result_h1");
+  var badge = document.createElement("div");
+  badge.className = "unlock-badge" + (isNew ? "" : " seen");
+  badge.innerHTML = isNew ? "<b>★</b> New type unlocked!" : "<b>✓</b> Already in your collection";
+  hero.insertBefore(badge, hero.firstChild);
+
+  var pctEl = document.querySelector(".percentage");
+  var meter = document.createElement("div");
+  meter.className = "meter";
+  meter.innerHTML = '<div class="meter-segs">' + "<span></span>".repeat(TOTAL) + "</div>" +
+    '<div class="meter-labels"><span>Level ' + level + "/" + TOTAL + "</span><span>Procrastination meter</span></div>";
+  pctEl.parentNode.insertBefore(meter, pctEl.nextSibling);
+
+  Array.prototype.forEach.call(hero.children, function (el, i) {
+    el.style.animationDelay = 0.1 + i * 0.15 + "s";
+  });
+
+  var restartLink = document.querySelector(".restart a");
+  if (restartLink && collected.length < TOTAL) restartLink.textContent = "Play again";
+
+  // ---------- collection cards ----------
+  var cards = document.querySelectorAll(".personastype");
+  cards.forEach(function (card) {
+    var n = parseInt(card.querySelector("img").getAttribute("src"), 10);
+    var have = collected.indexOf(n) !== -1;
+    card.classList.toggle("locked", !have);
+    var tag = document.createElement("span");
+    tag.className = "card-tag";
+    tag.textContent = have ? "✓ Collected" : "🔒 Locked";
+    card.appendChild(tag);
+  });
+  var header = document.querySelector(".morepersonas_header h1");
+  if (header) {
+    header.textContent = "Collect all procrastinator types";
+    var count = document.createElement("span");
+    count.className = "collection-count";
+    count.textContent = collected.length + " / " + TOTAL + " collected" +
+      (collected.length < TOTAL ? " — play again to unlock more" : " — you caught 'em all!");
+    var bar = document.createElement("span");
+    bar.className = "collection-bar";
+    bar.innerHTML = "<i></i>";
+    header.appendChild(count);
+    header.appendChild(bar);
+  }
+
+  // ---------- reveal sequence ----------
+  var segs = meter.querySelectorAll(".meter-segs span");
+  var pct = pctEl.querySelector("b");
+  var target = parseInt(pct.textContent, 10);
+
+  function fillMeter() {
+    var start = null, duration = 250 * level + 400;
+    pct.textContent = "0%";
+    function tick(t) {
+      if (start === null) start = t;
+      var p = Math.min((t - start) / duration, 1);
+      pct.textContent = Math.round(target * p) + "%";
+      segs.forEach(function (s, i) { if (p * level >= i + 1 - 0.01) s.classList.add("on"); });
+      if (p < 1) requestAnimationFrame(tick);
+      else if (isNew) confetti();
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function reveal() {
+    root.classList.add("revealed");
+    setTimeout(fillMeter, 900);
+  }
+
+  if (reduced) {
+    root.classList.add("revealed");
+    segs.forEach(function (s, i) { if (i < level) s.classList.add("on"); });
+  } else {
+    var overlay = document.createElement("div");
+    overlay.id = "reveal-overlay";
+    overlay.innerHTML = "<p>Calculating your procrastination level…</p><div class='bar'><i></i></div>";
+    document.body.appendChild(overlay);
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { overlay.querySelector("i").style.width = "100%"; });
+    });
+    setTimeout(function () {
+      overlay.classList.add("done");
+      reveal();
+      setTimeout(function () { overlay.remove(); }, 600);
+    }, 1900);
+  }
+
+  // ---------- confetti (no library) ----------
+  function confetti() {
+    var c = document.createElement("canvas");
+    c.id = "confetti";
+    document.body.appendChild(c);
+    var ctx = c.getContext("2d");
+    var dpr = window.devicePixelRatio || 1;
+    c.width = innerWidth * dpr;
+    c.height = innerHeight * dpr;
+    ctx.scale(dpr, dpr);
+    var colors = ["#3C8196", "#78BEB6", "#A2D1DD", "#F5C24C", "#6CC198"];
+    var parts = [];
+    for (var i = 0; i < 160; i++) {
+      parts.push({
+        x: innerWidth / 2, y: innerHeight / 3,
+        vx: (Math.random() - 0.5) * 16, vy: Math.random() * -14 - 4,
+        s: Math.random() * 6 + 4, r: Math.random() * 6, vr: (Math.random() - 0.5) * 0.4,
+        c: colors[i % colors.length]
+      });
+    }
+    var t0 = performance.now();
+    (function frame(t) {
+      var age = t - t0;
+      ctx.clearRect(0, 0, innerWidth, innerHeight);
+      ctx.globalAlpha = Math.max(0, 1 - age / 3000);
+      parts.forEach(function (p) {
+        p.vy += 0.35; p.vx *= 0.99; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.r);
+        ctx.fillStyle = p.c;
+        ctx.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2);
+        ctx.restore();
+      });
+      if (age < 3000) requestAnimationFrame(frame); else c.remove();
+    })(t0);
+  }
+
+  // ---------- reveal sections on scroll ----------
+  var targets = document.querySelectorAll(
+    ".overcome_copy .p1, .overcome_copy h1, .overcome_container, .morepersonas_header, .personastype, .visit-store_header, .visit-store_end"
+  );
+  if ("IntersectionObserver" in window && !reduced) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        e.target.classList.add("in");
+        io.unobserve(e.target);
+        var fill = e.target.querySelector(".collection-bar i");
+        if (fill) fill.style.width = (collected.length / TOTAL) * 100 + "%";
+        // drop the stagger delay afterwards so hover stays snappy
+        setTimeout(function () { e.target.style.transitionDelay = ""; }, 1500);
+      });
+    }, { threshold: 0.15 });
+    cards.forEach(function (el, i) { el.style.transitionDelay = i * 0.12 + "s"; });
+    targets.forEach(function (el) {
+      el.classList.add("reveal");
+      io.observe(el);
+    });
+  } else {
+    var fill = document.querySelector(".collection-bar i");
+    if (fill) fill.style.width = (collected.length / TOTAL) * 100 + "%";
+  }
+
+  // ---------- tips slider: animate each slide in and auto-advance ----------
+  if (typeof showSlides !== "function" || reduced) return;
+  var show = showSlides;
+  window.showSlides = function (n) {
+    show(n);
+    document.querySelectorAll(".mySlides, .ImageSlides").forEach(function (el) {
+      if (el.style.display !== "block") return;
+      el.classList.remove("slide-in");
+      void el.offsetWidth; // restart the animation
+      el.classList.add("slide-in");
+    });
+  };
+
+  var overcome = document.querySelector(".overcome");
+  var paused = false, visible = false, timer;
+  var restart = function () {
+    clearInterval(timer);
+    timer = setInterval(function () {
+      if (!paused && visible && !document.hidden) plusSlides(1);
+    }, 6000);
+  };
+  overcome.addEventListener("mouseenter", function () { paused = true; });
+  overcome.addEventListener("mouseleave", function () { paused = false; });
+  // manual navigation resets the countdown
+  document.querySelector(".dot-container").addEventListener("click", restart);
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(function (entries) {
+      visible = entries[0].isIntersecting;
+    }, { threshold: 0.3 }).observe(overcome);
+  } else {
+    visible = true;
+  }
+  restart();
+})();

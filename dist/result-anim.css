@@ -1,0 +1,187 @@
+/* Shared gamified animations for result pages h1-h5 (loaded after each page's own CSS).
+   Everything is gated behind html.anim (set by result-anim.js) so no-JS still shows content.
+   Uses `translate`/`scale` instead of `transform` so existing hover scale() rules keep working. */
+
+@keyframes rise {
+  from { opacity: 0; translate: 0 24px; }
+  to   { opacity: 1; translate: 0 0; }
+}
+@keyframes pop {
+  0%   { opacity: 0; scale: 0.6; }
+  60%  { opacity: 1; scale: 1.08; }
+  100% { opacity: 1; scale: 1; }
+}
+@keyframes stamp {
+  0%   { opacity: 0; scale: 2.4; rotate: -6deg; }
+  55%  { opacity: 1; scale: 0.92; rotate: 1deg; }
+  75%  { scale: 1.04; }
+  100% { opacity: 1; scale: 1; rotate: 0deg; }
+}
+@keyframes slide-in {
+  from { opacity: 0; translate: 32px 0; }
+  to   { opacity: 1; translate: 0 0; }
+}
+@keyframes seg-on {
+  0%   { scale: 1 1; background: #c9dfe6; }
+  50%  { scale: 1 1.6; }
+  100% { scale: 1 1; background: var(--seg); }
+}
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position: 200% 0; }
+}
+@keyframes wiggle {
+  0%, 100% { rotate: 0deg; }
+  25% { rotate: -8deg; }
+  75% { rotate: 8deg; }
+}
+
+/* ---------- reveal overlay ("calculating...") ---------- */
+#reveal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: #3C8196;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 2rem;
+  text-align: center;
+  transition: opacity 0.5s ease, scale 0.5s ease;
+}
+#reveal-overlay.done { opacity: 0; scale: 1.08; pointer-events: none; }
+#reveal-overlay p {
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+#reveal-overlay .bar {
+  width: min(320px, 70vw);
+  height: 12px;
+  border-radius: 99px;
+  background: rgba(255,255,255,0.25);
+  overflow: hidden;
+}
+#reveal-overlay .bar i {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #A2D1DD, #fff, #A2D1DD);
+  background-size: 200% 100%;
+  animation: shimmer 1s linear infinite;
+  transition: width 1.6s cubic-bezier(.6,0,.3,1);
+}
+
+/* ---------- hero ---------- */
+html.anim .result_h1 > *,
+html.anim #image { opacity: 0; }
+html.anim.revealed .result_h1 > * { animation: rise 0.7s cubic-bezier(.2,.7,.3,1) both; }
+html.anim.revealed .result_h1 > .persona { animation-name: stamp; animation-duration: 0.8s; }
+html.anim.revealed #image { animation: pop 0.9s cubic-bezier(.2,.7,.3,1) both; }
+
+.unlock-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.9rem;
+  border-radius: 99px;
+  background: #F5C24C;
+  color: #3a2c00;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  box-shadow: 0 4px 0 #c9971f;
+}
+.unlock-badge.seen { background: #fff; color: #3C8196; box-shadow: 0 4px 0 #c9dfe6; }
+html.anim.revealed .unlock-badge { animation: pop 0.6s cubic-bezier(.2,.7,.3,1) both; }
+html.anim.revealed .unlock-badge b { display: inline-block; animation: wiggle 0.5s ease 1.2s 2; }
+
+/* procrastination meter: 5 segments, one per level */
+.meter { margin: 0.5rem 0 1.5rem; max-width: 22rem; }
+.meter-segs { display: flex; gap: 6px; }
+.meter-segs span {
+  --seg: #3C8196;
+  flex: 1;
+  height: 14px;
+  border-radius: 4px;
+  background: #c9dfe6;
+}
+.meter-segs span.on { animation: seg-on 0.35s ease forwards; }
+.meter-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #3C8196;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ---------- collection (other personas) ---------- */
+.collection-count {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  color: #3C8196;
+  font-weight: 500;
+}
+.collection-bar {
+  display: block;
+  margin-top: 0.5rem;
+  width: 12rem;
+  height: 8px;
+  border-radius: 99px;
+  background: #c9dfe6;
+  overflow: hidden;
+}
+.collection-bar i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: #3C8196;
+  border-radius: 99px;
+  transition: width 1s cubic-bezier(.2,.7,.3,1) 0.4s;
+}
+.personastype { position: relative; }
+.personastype.locked img { filter: grayscale(1) brightness(1.15); opacity: 0.45; transition: filter 0.3s, opacity 0.3s; }
+.personastype.locked:hover img { filter: grayscale(0.4); opacity: 0.8; }
+.personastype.locked h1 { color: #a7a7a5 !important; }
+.card-tag {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  padding: 0.2rem 0.7rem;
+  border-radius: 99px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: #3C8196;
+  color: #fff;
+}
+.personastype.locked .card-tag { background: #898987; }
+
+/* ---------- scroll reveal ---------- */
+html.anim .reveal {
+  opacity: 0;
+  translate: 0 40px;
+  transition: opacity 0.8s ease, translate 0.8s cubic-bezier(.2,.7,.3,1), transform 0.2s;
+}
+html.anim .reveal.in { opacity: 1; translate: 0 0; }
+
+/* tips slider */
+.slide-in { animation: slide-in 0.6s cubic-bezier(.2,.7,.3,1) both; }
+
+#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 99; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  html.anim .result_h1 > *, html.anim #image, html.anim .reveal { opacity: 1; translate: none; }
+}
