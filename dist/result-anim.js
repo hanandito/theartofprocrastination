@@ -128,6 +128,36 @@
     })(t0);
   }
 
+  // ---------- 10 steps art: rebuild each png as base + animated props ----------
+  if (!reduced && window.fetch) {
+    fetch("../steps/props.json").then(function (r) { return r.json(); }).then(function (meta) {
+      document.querySelectorAll(".ImageSlides img").forEach(function (img) {
+        var n = parseInt((img.getAttribute("src").match(/(\d+)\.png$/) || [])[1], 10);
+        if (!meta[n]) return;
+        var pad = n < 10 ? "0" + n : "" + n;
+        var scene = document.createElement("div");
+        scene.className = "step-scene";
+        var base = new Image();
+        base.src = "../steps/" + pad + "-base.png";
+        base.alt = img.alt;
+        scene.appendChild(base);
+        meta[n].forEach(function (p, i) {
+          var el = new Image();
+          el.src = "../steps/" + p.src;
+          el.alt = "";
+          el.className = "prop anim-" + p.anim;
+          el.style.left = p.x + "%";
+          el.style.top = p.y + "%";
+          el.style.width = p.w + "%";
+          el.style.animationDelay = (p.anim === "blink" ? 0 : i * 0.3) + "s";
+          scene.appendChild(el);
+        });
+        // swap only once the base has loaded so the slide never flashes empty
+        base.onload = function () { img.replaceWith(scene); };
+      });
+    });
+  }
+
   // ---------- persona cards: play that persona's lottie on hover ----------
   // h1 ships its comp under a different name; lottie resolves images/ relative to the json
   function lottiePath(n) { return "../h" + n + "/" + (n === 1 ? "steadyrandy_comp.json" : "data.json"); }
