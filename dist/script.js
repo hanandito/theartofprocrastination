@@ -258,24 +258,24 @@ function loadNextQuestion () {
     //If the quiz is finished then we hide the questions container and show the results 
     if(currentQuestion == totalQuestions && totalScore >= 60) {
 
-        window.location.href = "/h1/index.html";
+        window.location.href = "h1/index.html";
 
     }
     
     else if (currentQuestion == totalQuestions && totalScore >= 45) {
-      window.location.href = "/h2/index.html";
+      window.location.href = "h2/index.html";
     }
 
     else if (currentQuestion == totalQuestions && totalScore >= 31) {
-      window.location.href = "/h3/index.html";
+      window.location.href = "h3/index.html";
     }
 
     else if (currentQuestion == totalQuestions && totalScore >= 16) {
-      window.location.href = "/h4/index.html";
+      window.location.href = "h4/index.html";
     }
 
     else if (currentQuestion == totalQuestions && totalScore >= 5) {
-      window.location.href = "/h5/index.html";
+      window.location.href = "h5/index.html";
     }
     
     // width = $(".progress__inner").css("width");
