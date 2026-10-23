@@ -61,15 +61,14 @@
       .start_btn {
         /* background: white; */
         align-items: center;
-        position: absolute;
+        position: relative;
         display: flex;
         flex-direction: column;
-        width: 80%;
-        top: 90%;
-        left: 50%;
-        transform: translate(-50%, -50%) scale(1);
+        width: 85%;
+        margin: 0 auto;
         border-radius: 10px;
-        padding-bottom: 5rem;
+        padding-top: 2rem;
+        padding-bottom: 3rem;
       }
       
       /* .start_btn h1{
@@ -85,7 +84,7 @@
           font-size: 3em;
           width: 100%;
           margin: 0 auto;
-          line-height: 4rem;
+          line-height: 1.1;
           margin-bottom: 2rem;
 
       }
@@ -178,9 +177,12 @@
     text-shadow: 1px 1px white;
     padding: 1rem;
     text-shadow: 0 1px #00000010;
-    width: 250px;
+    width: 85%;
+    max-width: 400px;
     flex-direction: column;
     z-index: -5;
+    max-height: calc(100vh - 170px);
+    max-height: calc(100svh - 170px);
   }
   
   .header{

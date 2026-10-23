@@ -29,6 +29,9 @@ html {
 *:after {
   box-sizing: inherit;
 }
+html, body {
+  overflow-x: hidden;
+}
 body {
   background: #E3E3E1;
   margin: 0;
@@ -355,8 +358,8 @@ transition: background-color 0.6s ease;
 .overcome_copy h1{
   color: #3C8196;
   font-family: "Editorial" !important ;
-  font-size: 8rem;
-  line-height: 8rem;
+  font-size: min(8rem, 8vw);
+  line-height: 1;
   letter-spacing: 3px;
 }
 
