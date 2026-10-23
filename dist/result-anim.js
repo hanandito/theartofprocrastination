@@ -128,6 +128,58 @@
     })(t0);
   }
 
+  // ---------- persona cards: play that persona's lottie on hover ----------
+  // h1 ships its comp under a different name; lottie resolves images/ relative to the json
+  function lottiePath(n) { return "../h" + n + "/" + (n === 1 ? "steadyrandy_comp.json" : "data.json"); }
+
+  function loadCardAnim(card) {
+    if (card._anim || typeof bodymovin === "undefined") return;
+    var img = card.querySelector("img");
+    var box = document.createElement("div");
+    box.className = "card-anim";
+    card.appendChild(box);
+    var place = function () {
+      box.style.left = img.offsetLeft + "px";
+      box.style.top = img.offsetTop + "px";
+      box.style.width = img.offsetWidth + "px";
+      box.style.height = img.offsetHeight + "px";
+    };
+    place();
+    card._place = place;
+    card._anim = bodymovin.loadAnimation({
+      container: box, renderer: "svg", loop: true, autoplay: false,
+      path: lottiePath(parseInt(img.getAttribute("src"), 10))
+    });
+    card._anim.addEventListener("DOMLoaded", function () {
+      box.classList.add("ready");
+      card.classList.add("has-anim");
+      if (card.matches(":hover")) card._anim.play();
+    });
+  }
+
+  if (!reduced) {
+    cards.forEach(function (card) {
+      card.addEventListener("pointerenter", function () {
+        loadCardAnim(card);
+        card._place();
+        card._anim.play();
+      });
+      card.addEventListener("pointerleave", function () { if (card._anim) card._anim.pause(); });
+    });
+    // preload once the collection scrolls near, so the first hover doesn't wait on the network
+    if ("IntersectionObserver" in window) {
+      var pre = new IntersectionObserver(function (entries) {
+        if (!entries[0].isIntersecting) return;
+        pre.disconnect();
+        cards.forEach(loadCardAnim);
+      }, { rootMargin: "300px" });
+      pre.observe(document.querySelector(".morepersonas"));
+    }
+    window.addEventListener("resize", function () {
+      cards.forEach(function (c) { if (c._place) c._place(); });
+    });
+  }
+
   // ---------- reveal sections on scroll ----------
   var targets = document.querySelectorAll(
     ".overcome_copy .p1, .overcome_copy h1, .overcome_container, .morepersonas_header, .personastype, .visit-store_header, .visit-store_end"

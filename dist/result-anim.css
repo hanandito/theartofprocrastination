@@ -184,6 +184,20 @@
 /* tips slider */
 .slide-in { animation: slide-in 0.6s cubic-bezier(.2,.7,.3,1) both; }
 
+/* 10 steps art: gentle idle float */
+@keyframes idle-float {
+  0%, 100% { translate: 0 0; rotate: -1.5deg; }
+  50%      { translate: 0 -14px; rotate: 1.5deg; }
+}
+.ImageSlides img { animation: idle-float 4s ease-in-out infinite; }
+
+/* persona cards: lottie layered over the png, plays on hover */
+.card-anim { position: absolute; pointer-events: none; opacity: 0; transition: opacity 0.2s; }
+.card-anim.ready { opacity: 1; }
+.personastype.has-anim img { visibility: hidden; }
+.personastype.locked .card-anim { filter: grayscale(1) brightness(1.15); opacity: 0.45; transition: filter 0.3s, opacity 0.3s; }
+.personastype.locked:hover .card-anim { filter: grayscale(0.4); opacity: 0.8; }
+
 #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 99; }
 
 @media (prefers-reduced-motion: reduce) {
