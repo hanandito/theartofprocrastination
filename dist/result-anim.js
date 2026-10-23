@@ -1,8 +1,9 @@
 // Shared gamified animations for result pages h1-h5. Loaded after each page's script.js.
 (function () {
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var root = document.documentElement;
-  root.classList.add("anim");
+  // the CSS overlay leaves ~2s after first paint; time everything from page load, not script load
+  var REVEAL_AT = 2000;
+  function after(ms, fn) { setTimeout(fn, Math.max(0, ms - performance.now())); }
 
   // which persona is this page? h1..h5 matches the 1-5 prefix on the persona images
   var level = parseInt((location.pathname.match(/\/h([1-5])\//) || [])[1], 10) || 1;
@@ -29,8 +30,10 @@
     '<div class="meter-labels"><span>Level ' + level + "/" + TOTAL + "</span><span>Procrastination meter</span></div>";
   pctEl.parentNode.insertBefore(meter, pctEl.nextSibling);
 
+  // negative delays are fine: a late script just joins the stagger mid-way
+  var now = performance.now();
   Array.prototype.forEach.call(hero.children, function (el, i) {
-    el.style.animationDelay = 0.1 + i * 0.15 + "s";
+    el.style.animationDelay = (REVEAL_AT + 100 + i * 150 - now) / 1000 + "s";
   });
 
   var restartLink = document.querySelector(".restart a");
@@ -80,27 +83,11 @@
     requestAnimationFrame(tick);
   }
 
-  function reveal() {
-    root.classList.add("revealed");
-    setTimeout(fillMeter, 900);
-  }
-
   if (reduced) {
-    root.classList.add("revealed");
     segs.forEach(function (s, i) { if (i < level) s.classList.add("on"); });
   } else {
-    var overlay = document.createElement("div");
-    overlay.id = "reveal-overlay";
-    overlay.innerHTML = "<p>Calculating your procrastination level…</p><div class='bar'><i></i></div>";
-    document.body.appendChild(overlay);
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () { overlay.querySelector("i").style.width = "100%"; });
-    });
-    setTimeout(function () {
-      overlay.classList.add("done");
-      reveal();
-      setTimeout(function () { overlay.remove(); }, 600);
-    }, 1900);
+    pct.textContent = "0%";
+    after(REVEAL_AT + 900, fillMeter);
   }
 
   // ---------- confetti (no library) ----------
