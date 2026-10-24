@@ -25,10 +25,6 @@
   75%  { scale: 1.04; }
   100% { opacity: 1; scale: 1; rotate: 0deg; }
 }
-@keyframes slide-in {
-  from { opacity: 0; translate: 32px 0; }
-  to   { opacity: 1; translate: 0 0; }
-}
 @keyframes seg-on {
   0%   { scale: 1 1; background: #c9dfe6; }
   50%  { scale: 1 1.6; }
@@ -181,8 +177,6 @@
 }
 .reveal.in { opacity: 1; translate: 0 0; }
 
-/* tips slider */
-.slide-in { animation: slide-in 0.6s cubic-bezier(.2,.7,.3,1) both; }
 
 /* 10 steps art: layered scene (base + detached props from steps/props.json) */
 @keyframes breathe { 0%, 100% { scale: 1 1; } 50% { scale: 1.01 1.02; } }
@@ -198,7 +192,10 @@
 @keyframes heart   { 0% { translate: 0 0; scale: 1; } 25% { scale: 1.2; } 50% { translate: 0 -25%; scale: 1; } 75% { scale: 1.15; } 100% { translate: 0 0; scale: 1; } }
 
 .step-scene { position: relative; transform-origin: 50% 100%; animation: breathe 3.2s ease-in-out infinite; }
-.overcome .overcome_container .step-scene .prop { position: absolute; margin: 0; display: block; }
+.step-scene > img:first-child { display: block; width: 100%; }
+.step-scene .prop { position: absolute; margin: 0; display: block; }
+.step-scene .prop-clip { position: absolute; overflow: hidden; }
+.step-scene .prop.fill { position: static; width: 100%; }
 .prop.anim-blink   { animation: blink 4s linear infinite; }
 .prop.anim-twinkle { animation: twinkle 1.8s ease-in-out infinite; }
 .prop.anim-bob     { animation: bob 2.4s ease-in-out infinite; }
@@ -216,6 +213,110 @@
 .personastype.has-anim img { visibility: hidden; }
 .personastype.locked .card-anim { filter: grayscale(1) brightness(1.15); opacity: 0.45; transition: filter 0.3s, opacity 0.3s; }
 .personastype.locked:hover .card-anim { filter: grayscale(0.4); opacity: 0.8; }
+
+/* articulated parts cut from the art (pivot set inline from props.json) */
+@keyframes flutter  { 0%, 100% { rotate: -6deg; } 50% { rotate: 5deg; } }
+@keyframes wave-l   { 0%, 100% { rotate: 0deg; } 50% { rotate: -5deg; } }
+@keyframes wave-r   { 0%, 100% { rotate: 0deg; } 50% { rotate: 5deg; } }
+@keyframes toss     { 0%, 100% { rotate: 0deg; } 18% { rotate: -9deg; } 30% { rotate: 3deg; } 42% { rotate: 0deg; } 58% { rotate: -2deg; } 62% { rotate: 0deg; } }
+@keyframes handwave { 0%, 100% { rotate: -9deg; } 50% { rotate: 9deg; } }
+@keyframes sink     { 0%, 100% { translate: 0 0; } 45%, 55% { translate: 0 75%; } }
+@keyframes ripple   { 0%, 100% { translate: -4% 0; } 50% { translate: 4% 0; } }
+@keyframes spin     { to { rotate: 360deg; } }
+.prop.anim-flutter  { animation: flutter 0.9s ease-in-out infinite; }
+.prop.anim-wave-l   { animation: wave-l 2.4s ease-in-out infinite; }
+.prop.anim-wave-r   { animation: wave-r 2.4s ease-in-out -1.2s infinite !important; }
+.prop.anim-toss     { animation: toss 2.2s cubic-bezier(.3,.6,.4,1) infinite !important; animation-delay: 0s !important; }
+.prop.anim-flip     { animation-delay: 0s !important; } /* egg leaves the pan when it tilts */
+.prop.anim-handwave { animation: handwave 1.1s ease-in-out infinite; }
+.prop.anim-sink     { animation: sink 9s ease-in-out infinite; }
+.prop.anim-ripple   { animation: ripple 3s ease-in-out infinite; }
+.prop.anim-spin     { animation: spin 10s linear infinite; }
+
+/* CSS-drawn decorations */
+.deco { position: absolute; pointer-events: none; }
+.deco i { position: absolute; inset: 0; margin: auto; border: 3px solid #4C8FA9; border-radius: 50%; opacity: 0; }
+.deco-aura i { animation: aura 3.6s ease-out infinite; }
+.deco-aura i:nth-child(2) { animation-delay: 1.2s; }
+.deco-aura i:nth-child(3) { animation-delay: 2.4s; }
+@keyframes aura { 0% { scale: 0.55; opacity: 0.7; } 100% { scale: 1.1; opacity: 0; } }
+.deco-waves i { border-color: transparent; border-right-color: #4C8FA9; animation: wave-out 1.6s ease-out infinite; }
+.deco-waves i:nth-child(1) { width: 40%; height: 40%; }
+.deco-waves i:nth-child(2) { width: 70%; height: 70%; animation-delay: 0.2s; }
+.deco-waves i:nth-child(3) { width: 100%; height: 100%; animation-delay: 0.4s; }
+@keyframes wave-out { 0% { opacity: 0; } 30% { opacity: 1; } 100% { opacity: 0; } }
+
+/* ---------- 10 steps section: stacked card deck ---------- */
+.overcome.tips-on { display: block; height: auto; padding: 6rem 6vw 5rem; }
+.tips { max-width: 1180px; margin: 0 auto; }
+.tips-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; flex-wrap: wrap; margin-bottom: 3.5rem; }
+.tips-kicker { color: #fff; font-size: 1.3rem; margin-bottom: 0.6rem; }
+.tips-title { font-family: "Editorial", serif; font-weight: normal; color: #3C8196; font-size: clamp(3rem, 8vw, 7.5rem); line-height: 0.95; letter-spacing: 2px; }
+.tips-count { font-family: "Editorial", serif; color: #fff; font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1; white-space: nowrap; }
+.tips-count b { font-weight: normal; color: #3C8196; }
+.tips-deck { display: grid; padding-top: 2rem; }
+.tip-card {
+  grid-area: 1 / 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 3rem;
+  padding: 2.5rem 3.5rem;
+  background: #F3F2EE;
+  border-radius: 32px;
+  box-shadow: 0 24px 50px rgba(30, 70, 80, 0.18);
+  transform-origin: 50% 100%;
+  transition: transform 0.75s cubic-bezier(.2,.7,.3,1), opacity 0.5s ease;
+  user-select: none;
+  touch-action: pan-y;
+  cursor: grab;
+}
+.tip-card.dragging { transition: none; cursor: grabbing; }
+.tip-card[data-pos="0"]   { z-index: 10; }
+.tip-card[data-pos="1"]   { z-index: 9; transform: translate(2.5%, -5%) rotate(2.5deg) scale(0.96); }
+.tip-card[data-pos="2"]   { z-index: 8; transform: translate(5%, -10%) rotate(5deg) scale(0.92); opacity: 0.85; }
+.tip-card[data-pos="far"] { z-index: 1; transform: translate(5%, -10%) rotate(5deg) scale(0.92); opacity: 0; }
+.tip-card[data-pos="out"] { z-index: 11; transform: translate(-115%, 8%) rotate(-14deg); opacity: 0; pointer-events: none; }
+.tip-card:not([data-pos="0"]) * { animation-play-state: paused !important; }
+.tip-art { width: 100%; max-width: 440px; justify-self: center; }
+.tip-art > img { display: block; width: 100%; }
+.tip-num { display: block; font-family: "Editorial", serif; font-size: 4.5rem; line-height: 1; color: #78BEB6; }
+.tip-copy h3 { font-size: 2rem; font-weight: 500; line-height: 1.2; color: #2f5560; margin: 0.6rem 0 1rem; }
+.tip-copy p { font-size: 1.05rem; line-height: 1.65; color: #4a5c60; }
+.tip-card[data-pos="0"] .tip-copy > * { animation: rise 0.6s cubic-bezier(.2,.7,.3,1) both; }
+.tip-card[data-pos="0"] .tip-copy > :nth-child(1) { animation-delay: 0.25s; }
+.tip-card[data-pos="0"] .tip-copy > :nth-child(2) { animation-delay: 0.35s; }
+.tip-card[data-pos="0"] .tip-copy > :nth-child(3) { animation-delay: 0.45s; }
+
+.tips-nav { display: flex; align-items: center; gap: 1.25rem; margin-top: 2.5rem; }
+.overcome .tips .tips-btn {
+  flex: none; width: 56px; height: 56px; padding: 0; margin: 0; border-radius: 50%;
+  display: grid; place-items: center; font-size: 1.4rem; background: #fff; color: #3C8196;
+  box-shadow: 0 6px 16px rgba(30, 70, 80, 0.15); transition: scale 0.2s, background 0.2s;
+}
+.overcome .tips .tips-btn:hover { transform: none; scale: 1.08; background: #F3F2EE; }
+.tips-progress { flex: 1; display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; }
+.overcome .tips .tips-progress button {
+  position: relative; height: 8px; min-height: 0; padding: 0; margin: 0; border-radius: 99px;
+  background: rgba(255, 255, 255, 0.45); overflow: hidden; box-shadow: none; transform: none;
+}
+.tips-progress i { position: absolute; inset: 0; width: 0; background: #3C8196; border-radius: 99px; }
+.tips-progress .done i { width: 100%; }
+.tips-progress .current i { animation: tip-fill 7s linear forwards; }
+.tips.paused .tips-progress .current i, .tips.offscreen .tips-progress .current i { animation-play-state: paused; }
+@keyframes tip-fill { to { width: 100%; } }
+
+@media (max-width: 846px) {
+  .overcome.tips-on { padding: 4rem 6vw 3.5rem; }
+  .tips-head { margin-bottom: 2rem; }
+  .tip-card { grid-template-columns: 1fr; gap: 1rem; padding: 1.5rem 1.5rem 2rem; border-radius: 24px; }
+  .tip-art { max-width: 300px; }
+  .tip-num { font-size: 3rem; }
+  .tip-copy h3 { font-size: 1.4rem; }
+  .tip-copy p { font-size: 0.95rem; }
+  .overcome .tips .tips-btn { width: 46px; height: 46px; }
+  .tips-progress { gap: 4px; }
+}
 
 #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 99; }
 
