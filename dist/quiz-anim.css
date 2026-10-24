@@ -192,6 +192,71 @@ body { background-image: none; background-color: #E3E3E1; }
   pointer-events: none;
 }
 
+/* ---------- per-question card layouts (class l0-l5 set by quiz-anim.js) ---------- */
+.quiz-container {
+  transition: left 0.7s cubic-bezier(.2,.7,.3,1), top 0.7s cubic-bezier(.2,.7,.3,1), width 0.7s cubic-bezier(.2,.7,.3,1),
+              rotate 0.7s cubic-bezier(.2,.7,.3,1), background-color 0.5s ease, opacity 1s ease !important;
+}
+/* row layouts: options sit side by side as pills */
+.quiz-container.l1, .quiz-container.l2, .quiz-container.l3, .quiz-container.l5 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 0.75rem;
+  align-items: stretch;
+}
+.quiz-container.l1 > :not(.option), .quiz-container.l2 > :not(.option),
+.quiz-container.l3 > :not(.option), .quiz-container.l5 > :not(.option) { grid-column: 1 / -1; }
+.quiz-container.l1 .option, .quiz-container.l3 .option, .quiz-container.l5 .option { border-radius: 99px; text-align: center; }
+.quiz-container.l1 .option input + span, .quiz-container.l3 .option input + span,
+.quiz-container.l5 .option input + span { padding-left: 0; border-radius: 99px; text-align: center; }
+
+/* l2: tall tiles with a big glyph */
+.quiz-container.l2 .option { line-height: 1.2; border-radius: 14px; }
+.quiz-container.l2 .option input + span {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.4rem;
+  min-height: 130px; padding: 0; border-radius: 14px; width: 100%;
+}
+.quiz-container.l2 .option input + span::before { font-size: 2.4rem; line-height: 1; font-weight: 300; }
+.quiz-container.l2 .option1::before { content: "✓"; }
+.quiz-container.l2 .option2::before { content: "~"; }
+.quiz-container.l2 .option3::before { content: "✕"; }
+
+/* l3: editorial serif question */
+.quiz-container.l3 .question { font-family: "Editorial_UltraLight", serif; font-weight: 400; font-size: 2.6rem; line-height: 1.1; color: #3C8196; }
+
+/* l4: tilted note card with round checkboxes */
+.quiz-container.l4 { background-color: #F6FBF8; box-shadow: 0 18px 40px rgba(0,0,0,0.18); }
+.quiz-container.l4 .option input + span { position: relative; padding-left: 3.2rem; display: inline-block; width: 100%; }
+.quiz-container.l4 .option input + span::before {
+  content: ""; position: absolute; left: 1rem; top: 50%; width: 1.2rem; height: 1.2rem; translate: 0 -50%;
+  border: 2px solid #4C8FA9; border-radius: 50%; background: #fff; transition: background 0.2s, box-shadow 0.2s;
+}
+.quiz-container.l4 .option input:checked + span::before { background: #fff; box-shadow: inset 0 0 0 4px #4C8FA9; border-color: #fff; }
+
+/* l5: frosted glass card, white type on the coloured background */
+.quiz-container.l5 { background-color: rgba(255,255,255,0.14); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); box-shadow: 0 10px 30px rgba(0,0,0,0.12); }
+.quiz-container.l5 .title { color: #fff; }
+.quiz-container.l5 .header { border-bottom-color: rgba(255,255,255,0.6); }
+.quiz-container.l5 .question { color: #fff; font-family: "Editorial_UltraLight", serif; font-weight: 400; font-size: 2.6rem; line-height: 1.1; text-shadow: none; }
+.quiz-container.l5 .option { background: transparent; border: 1.5px solid rgba(255,255,255,0.8); color: #fff; }
+.quiz-container.l5 .option:hover { background: rgba(255,255,255,0.18); }
+
+/* desktop only: the card itself moves around */
+@media (min-width: 847px) {
+  .quiz-container.l1 { left: 38%; }
+  .quiz-container.l2 { left: 62%; }
+  .quiz-container.l3 { width: min(880px, 80vw); top: 54%; }
+  .quiz-container.l4 { rotate: -2deg; }
+  .quiz-container.l5 { width: min(820px, 76vw); }
+}
+@media (max-width: 846px) {
+  .quiz-container.l2 .option input + span { min-height: 90px; }
+  .quiz-container.l2 .option input + span::before { font-size: 1.8rem; }
+  .quiz-container.l3 .question, .quiz-container.l5 .question { font-size: 1.7rem; }
+  .quiz-container.l1 .option input + span, .quiz-container.l3 .option input + span,
+  .quiz-container.l5 .option input + span { font-size: 0.8rem; }
+}
+
 @media (max-width: 846px) {
   .q-toast { top: 4.5rem; font-size: 0.75rem; }
   .q-count { margin-left: 0.75rem; font-size: 0.75rem; }

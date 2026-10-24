@@ -32,6 +32,10 @@
   window.generateQuestions = function (index) {
     generate(index);
     count.textContent = (index + 1) + " / " + totalQuestions;
+    // rotate through card layouts so consecutive questions never look the same
+    var LAYOUTS = [0, 3, 1, 5, 2, 4];
+    card.classList.remove("l0", "l1", "l2", "l3", "l4", "l5");
+    card.classList.add("l" + LAYOUTS[index % LAYOUTS.length]);
     restartAnim(card, "q-anim");
     if (layer.classList.contains("on")) renderBg(index);
 
