@@ -128,31 +128,139 @@
     })(t0);
   }
 
+  // ---------- 10 steps: rebuild the section as a swipeable card deck ----------
+  var overcome = document.querySelector(".overcome");
+  var tipData = Array.prototype.map.call(document.querySelectorAll(".mySlides"), function (el, i) {
+    return {
+      head: el.querySelector(".tips_head").textContent,
+      body: el.querySelector(".tips_body").textContent,
+      art: document.querySelectorAll(".ImageSlides img")[i].getAttribute("src")
+    };
+  });
+  var N = tipData.length;
+  var pad2 = function (n) { return n < 10 ? "0" + n : "" + n; };
+  var tips = document.createElement("div");
+  tips.className = "tips";
+  tips.innerHTML =
+    '<div class="tips-head"><div><p class="tips-kicker">10 Steps to…</p><h2 class="tips-title">Smart Procrastination</h2></div>' +
+    '<div class="tips-count"><b>01</b> / ' + pad2(N) + "</div></div>" +
+    '<div class="tips-stage"><div class="tips-deck">' +
+    tipData.map(function (t, i) {
+      return '<article class="tip-card" data-i="' + i + '"><div class="tip-art"><img src="' + t.art + '" alt=""></div>' +
+        '<div class="tip-copy"><span class="tip-num">' + pad2(i + 1) + "</span><h3>" + t.head + "</h3><p>" + t.body + "</p></div></article>";
+    }).join("") +
+    '</div><div class="tips-nav"><button class="tips-btn tips-prev" aria-label="Previous tip">←</button>' +
+    '<div class="tips-progress">' + tipData.map(function (t, i) { return '<button aria-label="Tip ' + (i + 1) + '"><i></i></button>'; }).join("") + "</div>" +
+    '<button class="tips-btn tips-next" aria-label="Next tip">→</button></div></div>';
+  overcome.innerHTML = "";
+  overcome.appendChild(tips);
+  overcome.classList.add("tips-on");
+
+  var tipCards = tips.querySelectorAll(".tip-card");
+  var tipSegs = tips.querySelectorAll(".tips-progress button");
+  var countEl = tips.querySelector(".tips-count b");
+  var cur = 0;
+  function showTip(n) {
+    cur = (n + N) % N;
+    tipCards.forEach(function (c, i) {
+      var pos = (i - cur + N) % N;
+      c.dataset.pos = pos === 0 ? "0" : pos === 1 ? "1" : pos === 2 ? "2" : pos === N - 1 ? "out" : "far";
+    });
+    tipSegs.forEach(function (b, i) {
+      b.classList.toggle("done", i < cur);
+      b.classList.remove("current");
+    });
+    void tipSegs[cur].offsetWidth; // restart the fill animation
+    tipSegs[cur].classList.add("current");
+    countEl.textContent = pad2(cur + 1);
+  }
+  tips.querySelector(".tips-prev").addEventListener("click", function () { showTip(cur - 1); });
+  tips.querySelector(".tips-next").addEventListener("click", function () { showTip(cur + 1); });
+  tipSegs.forEach(function (b, i) {
+    b.addEventListener("click", function () { showTip(i); });
+    // autoplay: the current segment's fill finishing is the timer
+    b.addEventListener("animationend", function () { if (i === cur) showTip(cur + 1); });
+  });
+  tips.addEventListener("mouseenter", function () { tips.classList.add("paused"); });
+  tips.addEventListener("mouseleave", function () { tips.classList.remove("paused"); });
+  if ("IntersectionObserver" in window) {
+    tips.classList.add("paused");
+    new IntersectionObserver(function (entries) {
+      tips.classList.toggle("offscreen", !entries[0].isIntersecting);
+      tips.classList.remove("paused");
+    }, { threshold: 0.3 }).observe(tips);
+  }
+
+  // drag / swipe the front card
+  var drag = null;
+  tips.querySelector(".tips-deck").addEventListener("pointerdown", function (e) {
+    var card = e.target.closest('.tip-card[data-pos="0"]');
+    if (!card) return;
+    drag = { card: card, x: e.clientX, dx: 0 };
+    card.classList.add("dragging");
+    card.setPointerCapture(e.pointerId);
+  });
+  tips.addEventListener("pointermove", function (e) {
+    if (!drag) return;
+    drag.dx = e.clientX - drag.x;
+    drag.card.style.transform = "translateX(" + drag.dx + "px) rotate(" + drag.dx / 25 + "deg)";
+  });
+  var endDrag = function () {
+    if (!drag) return;
+    drag.card.classList.remove("dragging");
+    drag.card.style.transform = "";
+    if (Math.abs(drag.dx) > 80) showTip(cur + (drag.dx < 0 ? 1 : -1));
+    drag = null;
+  };
+  tips.addEventListener("pointerup", endDrag);
+  tips.addEventListener("pointercancel", endDrag);
+  showTip(0);
+
   // ---------- 10 steps art: rebuild each png as base + animated props ----------
   if (!reduced && window.fetch) {
     fetch("../steps/props.json").then(function (r) { return r.json(); }).then(function (meta) {
-      document.querySelectorAll(".ImageSlides img").forEach(function (img) {
+      tips.querySelectorAll(".tip-art img").forEach(function (img) {
         var n = parseInt((img.getAttribute("src").match(/(\d+)\.png$/) || [])[1], 10);
         if (!meta[n]) return;
-        var pad = n < 10 ? "0" + n : "" + n;
         var scene = document.createElement("div");
         scene.className = "step-scene";
         var base = new Image();
-        base.src = "../steps/" + pad + "-base.png";
-        base.alt = img.alt;
+        base.src = "../steps/" + pad2(n) + "-base.png";
+        base.alt = "";
         scene.appendChild(base);
         meta[n].forEach(function (p, i) {
+          var box = document.createElement("div");
+          box.style.left = p.x + "%";
+          box.style.top = p.y + "%";
+          box.style.width = p.w + "%";
+          box.style.height = p.h + "%";
+          if (p.deco) {
+            // decorations drawn in CSS: breathing aura rings, sound waves
+            box.className = "deco deco-" + p.deco;
+            box.innerHTML = "<i></i><i></i><i></i>";
+            scene.appendChild(box);
+            return;
+          }
           var el = new Image();
           el.src = "../steps/" + p.src;
           el.alt = "";
           el.className = "prop anim-" + p.anim;
-          el.style.left = p.x + "%";
-          el.style.top = p.y + "%";
-          el.style.width = p.w + "%";
+          if (p.ox !== undefined) el.style.transformOrigin = p.ox + "% " + p.oy + "%";
           el.style.animationDelay = (p.anim === "blink" ? 0 : i * 0.3) + "s";
+          if (p.clip) {
+            // e.g. the sun sinks behind the horizon: the part's own box clips it
+            box.className = "prop-clip";
+            el.className += " fill";
+            box.appendChild(el);
+            scene.appendChild(box);
+            return;
+          }
+          el.style.left = box.style.left;
+          el.style.top = box.style.top;
+          el.style.width = box.style.width;
           scene.appendChild(el);
         });
-        // swap only once the base has loaded so the slide never flashes empty
+        // swap only once the base has loaded so the card never flashes empty
         base.onload = function () { img.replaceWith(scene); };
       });
     });
@@ -212,7 +320,7 @@
 
   // ---------- reveal sections on scroll ----------
   var targets = document.querySelectorAll(
-    ".overcome_copy .p1, .overcome_copy h1, .overcome_container, .morepersonas_header, .personastype, .visit-store_header, .visit-store_end"
+    ".tips-head, .tips-stage, .morepersonas_header, .personastype, .visit-store_header, .visit-store_end"
   );
   if ("IntersectionObserver" in window && !reduced) {
     var io = new IntersectionObserver(function (entries) {
@@ -236,37 +344,4 @@
     if (fill) fill.style.width = (collected.length / TOTAL) * 100 + "%";
   }
 
-  // ---------- tips slider: animate each slide in and auto-advance ----------
-  if (typeof showSlides !== "function" || reduced) return;
-  var show = showSlides;
-  window.showSlides = function (n) {
-    show(n);
-    document.querySelectorAll(".mySlides, .ImageSlides").forEach(function (el) {
-      if (el.style.display !== "block") return;
-      el.classList.remove("slide-in");
-      void el.offsetWidth; // restart the animation
-      el.classList.add("slide-in");
-    });
-  };
-
-  var overcome = document.querySelector(".overcome");
-  var paused = false, visible = false, timer;
-  var restart = function () {
-    clearInterval(timer);
-    timer = setInterval(function () {
-      if (!paused && visible && !document.hidden) plusSlides(1);
-    }, 6000);
-  };
-  overcome.addEventListener("mouseenter", function () { paused = true; });
-  overcome.addEventListener("mouseleave", function () { paused = false; });
-  // manual navigation resets the countdown
-  document.querySelector(".dot-container").addEventListener("click", restart);
-  if ("IntersectionObserver" in window) {
-    new IntersectionObserver(function (entries) {
-      visible = entries[0].isIntersecting;
-    }, { threshold: 0.3 }).observe(overcome);
-  } else {
-    visible = true;
-  }
-  restart();
 })();
