@@ -100,6 +100,34 @@ button.next.enable { animation: pulse 1.2s ease-out infinite; }
   animation: toast 2.2s ease forwards;
 }
 
+/* per-question animated pattern background (built by quiz-anim.js from quizbg/) */
+#quiz-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s ease, background-color 1.2s ease;
+}
+#quiz-bg.on { opacity: 1; }
+#quiz-bg::after { /* soft vignette keeps the card area calm */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.08), transparent 55%, rgba(0,0,0,0.12));
+}
+.qb { position: absolute; transition: opacity 0.5s ease, scale 0.5s cubic-bezier(.2,.7,.3,1); }
+.qb.enter, .qb.leave { opacity: 0; scale: 0.6; }
+.qb img { display: block; width: 100%; animation: var(--a) var(--d) ease-in-out var(--delay) infinite; }
+
+@keyframes qb-float  { 0%, 100% { translate: 0 0; } 50% { translate: 0 -12px; } }
+@keyframes qb-sway   { 0%, 100% { rotate: -6deg; } 50% { rotate: 6deg; } }
+@keyframes qb-spin   { to { rotate: 360deg; } }
+@keyframes qb-drift  { 0%, 100% { translate: -10px 0; } 50% { translate: 10px 0; } }
+@keyframes qb-bounce { 0%, 60%, 100% { translate: 0 0; scale: 1 1; } 70% { translate: 0 -14px; scale: 0.96 1.04; } 85% { translate: 0 0; scale: 1.04 0.96; } }
+@keyframes qb-wiggle { 0%, 80%, 100% { rotate: 0deg; } 85% { rotate: -10deg; } 90% { rotate: 8deg; } 95% { rotate: -4deg; } }
+
 @media (max-width: 846px) {
   .q-toast { top: 4.5rem; font-size: 0.75rem; }
   .q-count { margin-left: 0.75rem; font-size: 0.75rem; }
@@ -108,6 +136,6 @@ button.next.enable { animation: pulse 1.2s ease-out infinite; }
 @media (prefers-reduced-motion: reduce) {
   .quiz-container.q-anim .question, .quiz-container.q-anim .option,
   .option.tapped, .quiz-container.shake, button.next.enable,
-  .progress_inner, .xp-float { animation: none !important; }
+  .progress_inner, .xp-float, .qb img { animation: none !important; }
   .q-toast { animation: none; translate: -50% 0; }
 }
