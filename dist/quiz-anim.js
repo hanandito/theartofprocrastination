@@ -126,6 +126,8 @@
   }
 
   document.querySelector(".start_btn").addEventListener("click", function () {
+    var welcome = document.getElementById("welcome-bg");
+    if (welcome) welcome.classList.add("gone");
     layer.classList.add("on");
     renderBg(currentQuestion);
   });
